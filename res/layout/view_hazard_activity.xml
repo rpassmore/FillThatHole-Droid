@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"       
+android:id="@+id/ScrollView01"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"           
+   android:id="@+id/hazardView"   
+   android:orientation="vertical"
+   android:layout_width="fill_parent"
+   android:layout_height="fill_parent"
+   >
+<TextView 
+   android:background="#505050"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:text="Location details"
+   />
+<Button
+   android:id="@+id/locateOnMap"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:text="@string/locateOnMap"
+   android:onClick="locateClickHandler"
+   />
+<EditText
+   android:id="@+id/locationDesc"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"   
+   android:hint="Location Description"
+   android:inputType="textMultiLine"   
+   />
+<TextView
+   android:id="@+id/hazardDetailsLabel"
+   android:background="#505050" 
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:text="Hazard details"
+   />   
+   <!-- Add image view? -->
+<RelativeLayout
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:visibility="visible" >            
+<ImageView
+   android:id="@+id/image"
+   android:layout_width="wrap_content"
+   android:layout_height="wrap_content"       
+   />     
+<Button
+   android:id="@+id/addImage"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:layout_centerVertical="true"
+   android:layout_alignTop="@+id/image"
+   android:layout_toRightOf="@+id/image"
+   android:text="Add Photo"
+   android:onClick="addPhotoClickHandler"
+   android:layout_centerInParent="true"/>
+   </RelativeLayout>   
+<Spinner
+   android:id="@+id/hazardType"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"  
+   android:prompt="@string/hazardTypePrompt"
+   android:entries="@array/hazardTypesArray"
+   />   
+<EditText
+   android:id="@+id/hazardDesc"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"   
+   android:hint="Hazard Description"
+   android:inputType="textMultiLine"
+   />   
+<CheckBox
+   android:id="@+id/additionalInfo"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:checked="false"
+   android:text="Show additional information"
+   android:onClick="additionalInfoClickHandler"
+   />    
+  <RelativeLayout 
+  android:id="@+id/additionalInfoLayout"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:visibility="gone"
+   >           
+<TextView 
+  android:id="@+id/hazardDepthLabel"
+  android:textSize="19sp"
+  android:layout_width="150sp"
+  android:layout_height="wrap_content"
+  android:padding="9sp"
+  android:layout_below="@+id/additionalInfoLayout"  
+  android:text="Depth" />     
+  <EditText
+   android:id="@+id/hazardDepth"
+   android:layout_width="100sp"
+   android:layout_height="wrap_content"   
+   android:layout_toRightOf="@id/hazardDepthLabel"
+   android:layout_below="@+id/additionalInfoLayout"  
+   android:hint="Depth"   
+   android:inputType="numberDecimal" />
+  <TextView 
+    android:id="@+id/hazardDepthUnits"
+    android:textSize="19sp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="9sp"
+    android:layout_toRightOf="@+id/hazardDepth"
+    android:layout_below="@+id/additionalInfoLayout"
+    android:text="cm" />    
+  <TextView 
+  android:id="@+id/hazardSizeLabel"
+  android:textSize="19sp"
+  android:layout_width="150sp"
+  android:layout_height="wrap_content"
+  android:padding="9sp"
+  android:layout_below="@+id/hazardDepth"
+  android:text="Size" />  
+   <EditText
+   android:id="@+id/hazardSize"
+   android:layout_width="100sp"
+   android:layout_height="wrap_content"   
+   android:layout_toRightOf="@+id/hazardSizeLabel"
+   android:layout_below="@+id/hazardDepth"  
+   android:hint="Size"   
+   android:inputType="numberDecimal" />  
+  <TextView 
+    android:id="@+id/hazardSizeUnits"
+    android:textSize="19sp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="9sp"
+    android:layout_toRightOf="@+id/hazardSize"
+    android:layout_below="@+id/hazardDepth"
+    android:text="cm" /> 
+   <TextView 
+  android:id="@+id/hazardDistKerbLabel"
+  android:textSize="19sp"
+  android:layout_width="150sp"
+  android:layout_height="wrap_content"
+  android:padding="9sp"
+  android:layout_below="@+id/hazardSize"
+  android:text="Dist From Kerb" />
+   <EditText
+   android:id="@+id/hazardDistFromKerb"
+   android:layout_width="100sp"
+   android:layout_height="wrap_content"
+   android:layout_toRightOf="@+id/hazardDistKerbLabel"
+   android:layout_below="@+id/hazardSize"  
+   android:hint="Dist"
+   android:inputType="numberDecimal" />      
+  <TextView 
+    android:id="@+id/hazardDistKerbUnits"
+    android:textSize="19sp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="9sp"
+    android:layout_toRightOf="@+id/hazardDistFromKerb"
+    android:layout_below="@+id/hazardSize" 
+    android:text="cm" /> 
+<CheckBox
+   android:id="@+id/onRedRoute"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:layout_below="@+id/hazardDistFromKerb"   
+   android:checked="false"
+   android:text="On London red route"
+   />      
+   <CheckBox
+   android:id="@+id/onLevelCrossing"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:layout_below="@+id/onRedRoute"
+   android:checked="false"
+   android:text="On level crossing"
+   />      
+   <CheckBox
+   android:id="@+id/onTowPath"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:layout_below="@+id/onLevelCrossing"
+   android:checked="false"
+   android:text="On canal tow path"
+   />      
+   </RelativeLayout>   
+<Button
+   android:id="@+id/submit"
+   android:layout_width="fill_parent"
+   android:layout_height="wrap_content"
+   android:layout_below="@+id/onTowPath"
+   android:layout_alignWithParentIfMissing="true"
+   android:text="Submit"
+   android:onClick="submitClickHandler"
+   />            
+</LinearLayout>
+</ScrollView>
