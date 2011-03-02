@@ -59,7 +59,8 @@ public class DBAdapter {
 	private static final String DATABASE_TABLE = "hazards";
 	private static final int DATABASE_VERSION = 1;
 
-	private static final String DATABASE_CREATE = "create table " + DATABASE_TABLE + " (" + KEY_ID +" integer primary key autoincrement, "
+	private static final String DATABASE_CREATE = "create table " + DATABASE_TABLE + " (" 
+	+ KEY_ID +" integer primary key autoincrement, "
 	+ KEY_CREATED_DATE + " integer,"
 	+ KEY_UPDATED_DATE + " integer,"
 	+ KEY_LAT + " real,"
