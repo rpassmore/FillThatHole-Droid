@@ -6,5 +6,7 @@
           android:title="Delete" />
   <item android:id="@+id/edit"
           android:icon="@android:drawable/ic_menu_edit"
-          android:title="Edit" />
+          android:title="Edit/View" />
+  <item android:id="@+id/markFixed"          
+          android:title="Mark Fixed" />
 </menu>

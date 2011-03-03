@@ -23,7 +23,9 @@ package rpassmore.app.fillthathole;
 
 import java.sql.SQLException;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -131,22 +133,40 @@ public class MyHazardsActivity extends ListActivity {
     AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
     switch (item.getItemId()) {
       case R.id.edit: {
-        // check status of the hazard, hazards can not be edited once submitted
-        // other than to attach a photo.
-        Hazard hazard;
-        try {
-          hazard = dbAdapter.load(info.id);
-          if (hazard.getState() == Hazard.State.UNSUBMITTED || !hazard.isHasPhoto()) {
-            displayHazard(info.id);
-          } 
-        } catch (SQLException e) {
-          Log.e(getPackageName(), e.toString());
-        }
+        displayHazard(info.id);
         return true;
       }
       case R.id.delete: {
+        /*
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to delete this hazard?")
+               .setCancelable(false);
+               .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                 @Override
+                   public void onClick(DialogInterface dialog, int id) {                                              
+                   }
+               })
+               .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                 @Override
+                   public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                   }
+               });
+        AlertDialog alert = builder.create();        
+        */
         dbAdapter.delete(info.id);
         cursor.requery();
+        
+        return true;
+      }
+      case R.id.markFixed: {
+        try {
+          Hazard hazard = dbAdapter.load(info.id);
+          hazard.setState(Hazard.State.FIXED);
+          dbAdapter.save(hazard);
+        } catch (SQLException e) {
+          Log.e(getPackageName(), e.toString());
+        }
         return true;
       }
       default: {
