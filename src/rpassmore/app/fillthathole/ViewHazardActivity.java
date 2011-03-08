@@ -26,6 +26,22 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -177,7 +193,7 @@ public class ViewHazardActivity extends Activity {
   /**
    * 
    */
-  private void makeActivityReadOnly() {
+  private void makeActivityReadOnly() {   
     if (hazard.getState() != Hazard.State.UNSUBMITTED) {
       locationDesc.setEnabled(false);
       hazardType.setEnabled(false);
@@ -229,7 +245,34 @@ public class ViewHazardActivity extends Activity {
         // if the hazard has been submitted successfully set the state to
         // submitted
         // if photo has been submitted successfully set hasPhoto true
+       
+        
+        
+        
+        try {                            
+          HttpClient client = new DefaultHttpClient();  
+          String postURL = "http://www.fillthathole.org.uk/services/submit_hazard";
+          HttpPost post = new HttpPost(postURL); 
+         //hopefully dont need to set user agent
+          //post.setHeader("User-Agent", "Fill%20That%20Hole/1.11 CFNetwork/485.12.7 Darwin/10.4.0");      
+          ByteArrayEntity ent = new ByteArrayEntity(hazard.createSubmitStr().getBytes("UTF8"));          
+          ent.setContentType("application/x-www-form-urlencoded");       
+          post.setEntity(ent);          
+          HttpResponse responsePOST = client.execute(post);  
+          HttpEntity resEntity = responsePOST.getEntity();  
+          if (resEntity != null) {    
+            String s = EntityUtils.toString(resEntity);
+            Log.i("RESPONSE", EntityUtils.toString(resEntity));
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+          Log.e(getPackageName(), "Error submitting hazard", e);
+        }            
 
+        hazard.setState(Hazard.State.SUMITTED);
+        dbAdapter.open();
+        dbAdapter.save(hazard);
+        dbAdapter.close();
         break;
     }
     finish();
@@ -291,7 +334,7 @@ public class ViewHazardActivity extends Activity {
     try {
       out.close();
     } catch (IOException e) {
-      Log.e(getPackageName(), e.toString());
+      Log.e(getPackageName(), "Error scaling and storing thumbnail", e);
     }
 
     // display the thumbnail
@@ -315,7 +358,7 @@ public class ViewHazardActivity extends Activity {
             bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(data.getData()));
             storeNewPhoto(bitmap, data.getData().toString());
           } catch (FileNotFoundException ex) {
-            Log.e(getPackageName(), ex.toString());
+            Log.e(getPackageName(), "Error loading image file", ex);
           }
         }
         break;

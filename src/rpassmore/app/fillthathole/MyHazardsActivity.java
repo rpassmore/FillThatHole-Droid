@@ -164,6 +164,7 @@ public class MyHazardsActivity extends ListActivity {
           Hazard hazard = dbAdapter.load(info.id);
           hazard.setState(Hazard.State.FIXED);
           dbAdapter.save(hazard);
+          cursor.requery();
         } catch (SQLException e) {
           Log.e(getPackageName(), e.toString());
         }

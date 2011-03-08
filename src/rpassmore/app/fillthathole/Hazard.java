@@ -21,7 +21,14 @@
  */
 package rpassmore.app.fillthathole;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Hazard {
 
@@ -265,11 +272,43 @@ public class Hazard {
    */
   public String getHazardId() {
     return hazardId;
-  }
-
+  }  
+  
   public String createSubmitStr() {
-		String str = "{ + " + locationDesc + "}";
-		
+/*
+    String str = "";
+    JSONObject jsonObj = new JSONObject();
+    try {
+      jsonObj.put("hazardDescription", getHazardDesc());   
+      jsonObj.put("onRailwayCrossing", isOnLevelCrossing());
+      jsonObj.put("longitude", getLongitude());
+      jsonObj.put("latitude", getLattitude());
+      jsonObj.put("email", "");
+      jsonObj.put("onTowpath", isOnTowPath());
+      jsonObj.put("hazardType", getHazardType() + 1);
+      jsonObj.put("onRedRoute", isOnRedRoute());
+      jsonObj.put("locationDescription", getLocationDesc());
+      
+      str = jsonObj.toString(3);
+    } catch (JSONException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    */   
+    
+    /*Translate the class into a json esque string
+     * data has to be in this format or it is not accepted by the server*/
+		String str = "data={\"hazardDescription\":\"" + getHazardDesc() 
+		        + "\",\"onRailwayCrossing\":" + (isOnLevelCrossing() ? 1 : 0) 
+		        + ",\"longitude\":" + getLongitude() 
+		        + ",\"latitude\":" + getLattitude() 
+		        + ",\"email\":\"\"" 
+		        + ",\"onTowpath\":" + (isOnTowPath() ? 1 : 0)
+		        + ",\"hazardType\":" + (getHazardType() + 1)
+		        + ",\"onRedRoute\":" + (isOnRedRoute() ? 1 : 0) 
+		        + ",\"locationDescription\":\"" + getLocationDesc() 		        
+	          + "\"}";
+		//TODO add depth, dist from kerb and size
 		return str;
 	}
 	
