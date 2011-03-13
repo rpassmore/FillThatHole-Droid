@@ -34,7 +34,7 @@ public class Hazard {
 
 	enum State {
 		UNSUBMITTED,
-		SUMITTED,
+		SUBMITTED,
 		FIXED,
 		ERROR
 	}
@@ -66,6 +66,7 @@ public class Hazard {
 	
 	//holds the hazard id returned from the web site
 	private String hazardId = null;
+  private String reporterKey = null;
 	
 	public long getId() {
 		return id;
@@ -315,4 +316,19 @@ public class Hazard {
 	public String createAddImageStr() {
 		return "";
 	}
+
+  /**
+   * @param reporter_key
+   */
+  public void setReporterKey(String reporterKey) {
+    this.reporterKey  = reporterKey;    
+  }
+  
+  /**
+   * 
+   * @return
+   */
+  public String getreporterKey() {
+    return reporterKey;
+  }
 }
