@@ -70,6 +70,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 public class ViewHazardActivity extends Activity {
 
@@ -150,8 +151,8 @@ public class ViewHazardActivity extends Activity {
       }        
     }
   }    
-  
-  
+
+
   /**
    * loads the hazard and populates the ui from the id supplied in the bundle
    * @param b
@@ -227,7 +228,7 @@ public class ViewHazardActivity extends Activity {
     }
 
     additionalInfo.setChecked(hazard.isHasAdditionalInfo());
-    
+
     hazardDepth.setText(Double.toString(hazard.getDepth()));
     hazardSize.setText(Double.toString(hazard.getSize()));
     hazardDistFromKerb.setText(Double.toString(hazard.getDistFromKerb()));
@@ -241,42 +242,78 @@ public class ViewHazardActivity extends Activity {
       case R.id.submit:
         persistHazard();
 
-        // TODO
-        // if the hazard has been submitted successfully set the state to
-        // submitted
+        // TODO        
         // if photo has been submitted successfully set hasPhoto true
-       
-        
-        
-        
+
+        String error = null;
         try {                            
           HttpClient client = new DefaultHttpClient();  
           String postURL = "http://www.fillthathole.org.uk/services/submit_hazard";
           HttpPost post = new HttpPost(postURL); 
-         //hopefully dont need to set user agent
+          //hopefully dont need to set user agent
           //post.setHeader("User-Agent", "Fill%20That%20Hole/1.11 CFNetwork/485.12.7 Darwin/10.4.0");      
           ByteArrayEntity ent = new ByteArrayEntity(hazard.createSubmitStr().getBytes("UTF8"));          
           ent.setContentType("application/x-www-form-urlencoded");       
           post.setEntity(ent);          
           HttpResponse responsePOST = client.execute(post);  
-          HttpEntity resEntity = responsePOST.getEntity();  
+          HttpEntity resEntity = responsePOST.getEntity();            
           if (resEntity != null) {    
-            String s = EntityUtils.toString(resEntity);
-            Log.i("RESPONSE", EntityUtils.toString(resEntity));
+            String result = EntityUtils.toString(resEntity);
+
+            JSONObject json = new JSONObject(result);
+            if(json != null) {
+              String hazard_id = json.getString("hazard_id");
+              String reporter_key = json.getString("reporter_key");
+              if(hazard_id == null || reporter_key == null) {
+                //somekind of error occured try and get an error string
+                error = json.getString("error");              
+                Log.e(getPackageName(), "Error submitting hazard: " + error);
+              } else {
+                //store the returned hazard key
+                hazard.setHazardId(hazard_id);
+                hazard.setReporterKey(reporter_key);
+                hazard.setState(Hazard.State.SUBMITTED);
+
+                persistHazard();
+              }
+            } else {
+              error = "Unreconised response from web server";              
+              Log.e(getPackageName(), "Error submitting hazard: empty response");
+            }
           }
-        } catch (Exception e) {
-          e.printStackTrace();
+        } catch (Exception e) {          
+          error = "Web server could not contacted";
           Log.e(getPackageName(), "Error submitting hazard", e);
         }            
 
-        hazard.setState(Hazard.State.SUMITTED);
-        dbAdapter.open();
-        dbAdapter.save(hazard);
-        dbAdapter.close();
+        //display any error to the user
+        if(error != null) {         
+          Toast toast = Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG);
+          toast.show();
+        } else {
+          if(hazard.getPhoto() != null) {
+            //submit the attached photo
+            submitPhoto();
+          } 
+         
+          //inform user submission complete
+          Toast toast = Toast.makeText(getApplicationContext(), "Hazard submitted successfully", Toast.LENGTH_SHORT);
+          toast.show();                   
+        }        
         break;
     }
     finish();
   }
+
+  /**
+   * 
+   */
+  private void submitPhoto() {
+    // TODO Auto-generated method stub
+    hazard.setHasPhoto(true);
+    persistHazard();
+  }
+
 
   /**
    * 
@@ -301,7 +338,7 @@ public class ViewHazardActivity extends Activity {
     hazard.setOnRedRoute(onRedRoute.isChecked());
     hazard.setOnLevelCrossing(onLevelCrossing.isChecked());
     hazard.setOnTowPath(onTowPath.isChecked());
-    
+
     dbAdapter.open();
     long id = dbAdapter.save(hazard);
     hazard.setId(id); 
@@ -365,15 +402,15 @@ public class ViewHazardActivity extends Activity {
       }
       case PICTURE_ACTIVITY: {
         if (resultCode == RESULT_OK) {
-                              
+
           String[] projection = {MediaStore.Images.Media.DATA}; 
           Cursor cursor = managedQuery(capturedImageURI, projection, null, null, null); 
           int column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA); 
           cursor.moveToFirst(); 
           String capturedImageFilePath = cursor.getString(column_index_data);
-                   
+
           Bitmap bitmap = BitmapFactory.decodeFile(capturedImageFilePath);    
-          
+
           storeNewPhoto(bitmap, capturedImageFilePath);        
         }
         break;
@@ -401,8 +438,8 @@ public class ViewHazardActivity extends Activity {
         // Create our AlertDialog
         Builder builder = new AlertDialog.Builder(this);
         builder
-            .setMessage(
-                "You can attach a photo of the hazard to your report. Would you like to take a new photo or use an existing one?")
+        .setMessage(
+            "You can attach a photo of the hazard to your report. Would you like to take a new photo or use an existing one?")
             .setCancelable(true).setPositiveButton("New photo", new DialogInterface.OnClickListener() {             
               @Override
               public void onClick(DialogInterface dialog, int which) {              
@@ -413,7 +450,7 @@ public class ViewHazardActivity extends Activity {
                 values.put(Media.DESCRIPTION, "FillThatHole Image");
                 values.put(Media.DATA, imageDirectory.getPath() );
                 values.put(MediaStore.Images.Media.TITLE, filename);  
-                
+
                 // start the camera and take a new photo
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);                                                                             
                 capturedImageURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);  
