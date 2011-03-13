@@ -25,9 +25,11 @@ import java.sql.SQLException;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -41,6 +43,7 @@ import android.widget.ListView;
 
 public class MyHazardsActivity extends ListActivity {
 
+  private static final String VIEW_SUBMITTED_HAZARD_WEB_ADR =  "http://www.fillthathole.org.uk/hazard/";
   private Cursor cursor = null;
   private DBAdapter dbAdapter = null;
 
@@ -87,19 +90,30 @@ public class MyHazardsActivity extends ListActivity {
   @Override
   public void onListItemClick(ListView l, View view, int position, long id) {
     super.onListItemClick(l, view, position, id);
-    //display the fillThatHole hazard web page   
-    
-    // check status of the hazard, hazards can not be edited once submitted
-    // other than to attach a photo.
-    Hazard hazard;
+    //display the fillThatHole hazard web page at   
+    //http://www.fillthathole.org.uk/hazard/<hazard_id>?key=<reporter_key>
     try {
-      hazard = dbAdapter.load(id);
-      if (hazard.getState() == Hazard.State.UNSUBMITTED || !hazard.isHasPhoto()) {
+      Hazard hazard = dbAdapter.load(id);          
+
+      //hazard has been submitted so display on website
+      if (hazard.getState() == Hazard.State.SUBMITTED) {
+        String url = VIEW_SUBMITTED_HAZARD_WEB_ADR + hazard.getHazardId() + "?key=" + hazard.getreporterKey();  
+        Intent intent = new Intent(Intent.ACTION_VIEW);  
+        Uri u = Uri.parse(url);  
+        intent.setData(u);  
+        try {  
+          startActivity(intent);  
+        } catch (ActivityNotFoundException e) {          
+          Log.e(getPackageName(), "Browser not found.", e);        
+        }
+
+      } else {
+        //hazard not submitted so open for editing
         displayHazard(id);
       }
-    } catch (SQLException e) {
-      Log.e(getPackageName(), e.toString());
-    }
+    } catch (SQLException e) {      
+      Log.e(getPackageName(), "Error fetching hazard for viewing", e);
+    }  
   }
 
   @Override
@@ -139,9 +153,9 @@ public class MyHazardsActivity extends ListActivity {
       case R.id.delete: {
         /*
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want to delete this hazard?")
-               .setCancelable(false);
-               .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setMessage("Are you sure you want to delete this hazard?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                  @Override
                    public void onClick(DialogInterface dialog, int id) {                                              
                    }
