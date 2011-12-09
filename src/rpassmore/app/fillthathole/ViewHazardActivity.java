@@ -239,12 +239,21 @@ public class ViewHazardActivity extends Activity {
 
   public void submitClickHandler(View view) {
     switch (view.getId()) {
-      case R.id.submit:
+      case R.id.submit:        
+        
+        String error = null;
+        try {
+          WebSiteComms.submit(hazard);
+        } catch (WebSiteCommsException e) {
+          Log.e(getPackageName(), "Error submitting hazard", e);
+          error = e.getMessage();
+        }
+        
         persistHazard();
-
+        
         // TODO        
         // if photo has been submitted successfully set hasPhoto true
-
+/*
         String error = null;
         try {                            
           HttpClient client = new DefaultHttpClient();  
@@ -285,7 +294,7 @@ public class ViewHazardActivity extends Activity {
           error = "Web server could not contacted";
           Log.e(getPackageName(), "Error submitting hazard", e);
         }            
-
+*/
         //display any error to the user
         if(error != null) {         
           Toast toast = Toast.makeText(getApplicationContext(), error, Toast.LENGTH_LONG);

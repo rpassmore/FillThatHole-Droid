@@ -53,6 +53,7 @@ public class DBAdapter {
 	public static final String KEY_ON_LEVEL_CROSSING = "onLevelCrossing";
 	public static final String KEY_ON_TOW_PATH = "onTowPath";
 	public static final String KEY_HAZARD_ID = "hazardId";
+	public static final String KEY_REPORTER_KEY = "reporterKey";
 	private static final String TAG = "DBAdapter";
 	
 	private static final String DATABASE_NAME = "FillThatHole";
@@ -80,7 +81,8 @@ public class DBAdapter {
 	+ KEY_ON_RED_ROUTE + " integer,"
 	+ KEY_ON_LEVEL_CROSSING + " integer,"
 	+ KEY_ON_TOW_PATH + " integer,"
-	+ KEY_HAZARD_ID + " text"
+	+ KEY_HAZARD_ID + " text,"
+	+ KEY_REPORTER_KEY + " text"
 	+ ");";
 
 	private final Context context;
@@ -150,6 +152,7 @@ public class DBAdapter {
 		initialValues.put(KEY_ON_LEVEL_CROSSING, hazard.isOnLevelCrossing());
 		initialValues.put(KEY_ON_TOW_PATH, hazard.isOnTowPath());		
 		initialValues.put(KEY_HAZARD_ID, hazard.getHazardId());
+		initialValues.put(KEY_REPORTER_KEY, hazard.getreporterKey());
 		return db.insert(DATABASE_TABLE, null, initialValues);
 	}
 
@@ -205,6 +208,7 @@ public class DBAdapter {
 		hazard.setOnLevelCrossing( (data.getInt( data.getColumnIndex(KEY_ON_LEVEL_CROSSING) ) != 0)  );		
 		hazard.setOnTowPath( (data.getInt( data.getColumnIndex(KEY_ON_TOW_PATH) ) != 0) );
 		hazard.setHazardId( (data.getString( data.getColumnIndex(KEY_HAZARD_ID) )) );
+		hazard.setReporterKey( (data.getString( data.getColumnIndex(KEY_REPORTER_KEY) )) );
 		return hazard;
 	}
 
@@ -230,7 +234,8 @@ public class DBAdapter {
 		initialValues.put(KEY_ON_RED_ROUTE, hazard.isOnRedRoute());
 		initialValues.put(KEY_ON_LEVEL_CROSSING, hazard.isOnLevelCrossing());
 		initialValues.put(KEY_ON_TOW_PATH, hazard.isOnTowPath());
-		initialValues.put(KEY_HAZARD_ID, hazard.getHazardId());   
+		initialValues.put(KEY_HAZARD_ID, hazard.getHazardId());
+		initialValues.put(KEY_REPORTER_KEY, hazard.getreporterKey());   
 		return db.update(DATABASE_TABLE, initialValues, KEY_ID + "=" + hazard.getId(), null) > 0;
 	}	
 	

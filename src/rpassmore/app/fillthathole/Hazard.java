@@ -331,4 +331,19 @@ public class Hazard {
   public String getreporterKey() {
     return reporterKey;
   }
+
+  /**
+   * @return
+   */
+  public String createUpdateStr() {
+    /*
+     data={"hazard_id":47918,"status":"fixed","reporter_key":"92aa9b809f"}
+     * */
+    
+    String str = "data={\"hazard_id\":" + getHazardId() 
+    + ",\"status\":" + "fixed" 
+    + ",\"reporter_key\":\"" + getreporterKey()                 
+    + "\"}";
+    return str;
+  }
 }

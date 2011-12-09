@@ -40,6 +40,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class MyHazardsActivity extends ListActivity {
 
@@ -176,9 +177,22 @@ public class MyHazardsActivity extends ListActivity {
       case R.id.markFixed: {
         try {
           Hazard hazard = dbAdapter.load(info.id);
-          hazard.setState(Hazard.State.FIXED);
-          dbAdapter.save(hazard);
-          cursor.requery();
+          
+          try {
+            WebSiteComms.updateState(hazard);
+            hazard.setState(Hazard.State.FIXED);
+            dbAdapter.save(hazard);
+            cursor.requery();
+            
+            //inform user submission complete
+            Toast toast = Toast.makeText(getApplicationContext(), "Hazard updated successfully", Toast.LENGTH_SHORT);
+            toast.show();        
+            
+          } catch (WebSiteCommsException e) {
+            Log.e(getPackageName(), "Error updating hazard", e);
+            Toast toast = Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG);
+            toast.show();
+          }                    
         } catch (SQLException e) {
           Log.e(getPackageName(), e.toString());
         }
